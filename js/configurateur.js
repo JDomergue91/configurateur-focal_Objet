@@ -19,205 +19,132 @@ const couleurText = [
     { couleur: 'Jaune', code: '#e2d047' },
     { couleur: 'Orange', code: '#f1722f' }
 ];
-let selectedTissu = 'Jaune';
-let selectedPoche = 'Bleu';
+
+let selectedTissu = 'Violet';
+let selectedPoche = 'Rouge';
 let customText = '';
 let selectedTextColor = 'Noir';
 let textOption = true;
 const prixLettre = 1.80;
-let prixTissu = 0;
-let prixPoche = 0;
-let prixTextePerso = 0;
-let prixConfig = 0;
-
 
 window.addEventListener("load", () => {
-console.log("everything's ready !");
-prixArticle();
+    // start option tissu
+    const tissuOptions = document.getElementById("tissu");
+    const tissuImage = document.getElementById("optionTissuImage");
+    optionsTissu.forEach(tissu => {
+        const newOption = document.createElement("div");
+        newOption.classList.add("ColorRound");
+        if (tissu.couleur == selectedTissu) {
+            newOption.classList.add("selectedColor");
+            tissuImage.src = tissu.image;
+        }
+        newOption.style.backgroundColor = tissu.code;
+        newOption.addEventListener("click", () => {
+            tissuImage.src = tissu.image;
+            document.querySelector("#displayTissu").textContent = tissu.couleur;
+            selectedTissu = tissu.couleur;
+            document.querySelectorAll("#tissu > div").forEach((element) => {
+                element.classList.remove("selectedColor");
+            })
+            newOption.classList.add("selectedColor");
+            repricing();
+        })
+        tissuOptions.appendChild(newOption);
+    });
 
+
+
+    // start option poche
+    const pocheOptions = document.getElementById("optionPoche");
+    const pocheImage = document.getElementById("optionPocheImage");
+    optionsPoche.forEach(poche => {
+        const newOption = document.createElement("div");
+        newOption.classList.add("ColorRound");
+        if (poche.couleur == selectedPoche) {
+            newOption.classList.add("selectedColor");
+            pocheImage.src = poche.image;
+        }
+        newOption.style.backgroundColor = poche.code;
+        newOption.addEventListener("click", () => {
+            selectedPoche = poche.couleur;
+            document.querySelector("#displayPoche").textContent = poche.couleur;
+            document.querySelector("#optionPocheImage").src = poche.image;
+            document.querySelectorAll("#optionPoche > div").forEach((element) => {
+                element.classList.remove("selectedColor");
+            })
+            newOption.classList.add("selectedColor");
+            repricing();
+        })
+        pocheOptions.appendChild(newOption);
+    });
+
+
+
+
+    // start option couleur texte
+    const texteColorOptions = document.getElementById("textColorOptions");
+    couleurText.forEach(texteCouleur => {
+        const newOption = document.createElement("div");
+        newOption.classList.add("ColorRound");
+        if (texteCouleur.couleur == selectedTextColor) {
+            newOption.classList.add("selectedColor");
+        }
+        newOption.style.backgroundColor = texteCouleur.code;
+        newOption.addEventListener("click", () => {
+            selectedTextColor = texteCouleur.couleur;
+            document.querySelector(".textePerso").style.color = texteCouleur.code;
+            document.querySelectorAll("#textColorOptions > div").forEach((element) => {
+                element.classList.remove("selectedColor");
+            })
+            newOption.classList.add("selectedColor");
+            repricing();
+        })
+        texteColorOptions.appendChild(newOption);
+    });
+    document.querySelector("#customText").addEventListener("input", (event) => {
+        customText = event.target.value;
+        document.querySelector(".textePerso").textContent = customText;
+        repricing();
+    })
+    document.querySelectorAll('[name="UseText"]').forEach(element => {
+        element.addEventListener("change", event => {
+            if(event.target.value === "true") {
+                textOption = true;
+            } else {
+                textOption = false;
+            }
+           // textOption = event.target.value === "true" ? true : false;
+           repricing();
+        })
+    })
+    repricing();
 })
 
-const titrePrix = document.querySelector('.price');
-
-const textCustom = document.getElementById('customText');
-const textColor = document.getElementById('textColorOptions');
-const textConfig = document.querySelector('.textePerso');
-
-const blockTissu = document.getElementById('tissu');
-const titreTissu = document.getElementById('displayTissu');
-const imgTissu = document.getElementById('optionTissuImage');
-
-const blockPoche = document.getElementById('optionPoche');
-const titrePoche = document.getElementById('displayPoche')
-const imgPoche = document.getElementById('optionPocheImage')
 
 
 
-
-// start Option Tissu
-
+function repricing() {
+    let calculatedPrice = 0;
     optionsTissu.forEach(tissu => {
-
-        // console.log(tissu);
-
-        const divTissu = document.createElement('div');
-        divTissu.classList.add("colorRound");
-        divTissu.style.backgroundColor = tissu.code;
-        divTissu.setAttribute("id", "tissu" + tissu.couleur);
-
-        if (selectedTissu == tissu.couleur) {
-
-            divTissu.classList.add("selectedColor");
-            titreTissu.textContent = tissu.couleur;
-            imgTissu.setAttribute("src", tissu.image);
-            prixTissu = tissu.price;
-        }
-        blockTissu.appendChild(divTissu);
-
-        divTissu.addEventListener('click', event => {
-            
-            // alert("salut");
-           optionsTissu.forEach(tissu => {
-                document.getElementById("tissu" + tissu.couleur).classList.remove("selectedColor");
-           }) 
-
-           divTissu.classList.add("selectedColor");
-            titreTissu.textContent = tissu.couleur;
-            imgTissu.setAttribute("src", tissu.image);
-
-            prixTissu = tissu.price;
-
-            // console.log(prixTissu);
-
-            prixArticle();
-        })        
-    });
-
-    // Start Option poche
- 
-    optionsPoche.forEach(poche => {
-
-        // console.log(poche);
-
-        const divPoche = document.createElement('div');
-        divPoche.classList.add("colorRound");
-        divPoche.style.backgroundColor = poche.code;
-        divPoche.setAttribute("id", "poche" + poche.couleur);
-
-        if (selectedPoche == poche.couleur) {
-
-            divPoche.classList.add("selectedColor");
-            titrePoche.textContent = poche.couleur;
-            imgPoche.setAttribute("src", poche.image);
-            prixPoche = poche.price;
-
-        }
-        blockPoche.appendChild(divPoche);
-
-        const clickPoche = document.getElementById(poche.couleur);
-
-        divPoche.addEventListener('click', event => {
-            
-            // alert("salut");
-           optionsPoche.forEach(poche => {
-                document.getElementById("poche" + poche.couleur).classList.remove("selectedColor");
-           }) 
-
-           divPoche.classList.add("selectedColor");
-            titrePoche.textContent = poche.couleur;
-            imgPoche.setAttribute("src", poche.image);
-
-            prixPoche = poche.price;
- 
-            prixArticle();
-        }) 
-    });
-
-
-
-// start config texte
-const textPerso = document.querySelectorAll('[name="useText"]').forEach(radioElement => {
-    radioElement.addEventListener("change", event => {
-        const activeText = event.target.value;
-        // console.log(activeText);
-
-        if (activeText == "false") {
-            textCustom.style.display = 'none';
-            textColor.style.display = 'none';
-            textConfig.style.display = 'none';
-            prixTextePerso = 0;
-            prixArticle();
-
-        } else if ( activeText == "true") {
-            textCustom.style.display = '';
-            textColor.style.display = '';
-            textConfig.style.display = '';
-            textCustom.value = '';
-            textConfig.textContent = textCustom.placeholder;
-
-            // console.log(textCustom);
-            prixArticle();
+        if (tissu.couleur == selectedTissu) {
+            calculatedPrice += tissu.price;
         }
     })
-})
+   // calculatedPrice += optionsTissu.find(tissu => tissu.couleur == selectedTissu).price;
 
-
-// Start couleur texte custom
-
-couleurText.forEach(couleur => {
-
-    // console.log(tissu);
-
-    const divTextColor = document.createElement('div');
-    divTextColor.classList.add("colorRound");
-    divTextColor.style.backgroundColor = couleur.code;
-    divTextColor.setAttribute("id","texte" + couleur.couleur);
-
-    if (selectedTextColor == couleur.couleur) {
-
-        divTextColor.classList.add("selectedColor");
-        textConfig.style.color = couleur.code;
+    optionsPoche.forEach(poche => {
+        if (poche.couleur == selectedPoche) {
+            calculatedPrice += poche.price;
+        }
+    })
+    // calculatedPrice += optionsPoche.find(poche => poche.couleur == selectedPoche).price;
+    if (textOption) {
+        calculatedPrice += customText.length * prixLettre;
+        document.querySelector("#textColorOptions").style.visibility = document.querySelector("#customText").style.visibility = document.querySelector(".textePerso").style.visibility = "visible";
+    } else {
+        document.querySelector("#textColorOptions").style.visibility = document.querySelector("#customText").style.visibility = document.querySelector(".textePerso").style.visibility = "hidden";
     }
-    textColor.appendChild(divTextColor);
 
-    divTextColor.addEventListener('click', event => {
-        
-        // alert("salut");
-       couleurText.forEach(couleur => {
-            document.getElementById("texte" + couleur.couleur).classList.remove("selectedColor");
-       }) 
+    document.querySelector(".price").textContent = calculatedPrice.toFixed(2) + " €";
 
-       divTextColor.classList.add("selectedColor");
-       textConfig.style.color = couleur.code;
-    
-
-    })        
-});
-
-
-textCustom.addEventListener("input", (event) => {
-    const nbLetter = event.target.value.length;
-    const customText  = event.target.value;
-
-    // console.log(customText);
-    // console.log(nbLetter);
-
-    prixTextePerso = nbLetter * prixLettre;
-
-    // console.log(prixTextePerso);
-    textConfig.textContent = customText;
-    prixArticle();
-
-})
-
-
-// fonction calcule prix
-function prixArticle() {
-
-    prixConfig = prixTissu + prixPoche + prixTextePerso;
-
-    titrePrix.textContent = prixConfig.toFixed(2) + " €";
-
-    // console.log(prixConfig);
-};
-
+}

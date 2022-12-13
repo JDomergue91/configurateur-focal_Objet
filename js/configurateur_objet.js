@@ -19,42 +19,74 @@ const couleurText = [
     { couleur: 'Jaune', code: '#e2d047' },
     { couleur: 'Orange', code: '#f1722f' }
 ];
-let selectedTissu = 'Jaune';
-let selectedPoche = 'Bleu';
+
+let selectedTissu = 'Violet';
+let selectedPoche = 'Rouge';
 let customText = '';
 let selectedTextColor = 'Noir';
 let textOption = true;
 const prixLettre = 1.80;
-let prixTissu = 0;
-let prixPoche = 0;
-let prixTextePerso = 0;
-let prixConfig = 0;
+const tissuOptions = document.getElementById("tissu");
+const tissuImage = document.getElementById("optionTissuImage");
 
+const pocheOptions = document.getElementById("optionPoche");
+const pocheImage = document.getElementById("optionPocheImage");
 
-window.addEventListener("load", () => {
-    console.log("everything's ready !");
-    prixArticle();
-    
-});
+const texteColorOptions = document.getElementById("textColorOptions");
 
-const titrePrix = document.querySelector('.price');
+const priceBlock = document.querySelector(".price");
 
-const textCustom = document.getElementById('customText');
-const textColor = document.getElementById('textColorOptions');
-const textConfig = document.querySelector('.textePerso');
-
-const blockTissu = document.getElementById('tissu');
-const titreTissu = document.getElementById('displayTissu');
-const imgTissu = document.getElementById('optionTissuImage');
-
-const blockPoche = document.getElementById('optionPoche');
-const titrePoche = document.getElementById('displayPoche')
-const imgPoche = document.getElementById('optionPocheImage')
-
-
-// start Option Tissu 
+let nbLettre = 0;
 
 optionsTissu.forEach(tissu => {
-
-    const tissu = new Configurateur()
+    const objetTissu = new OptionTissu(tissu.couleur, tissu.code, tissu.image, tissu.price);
+    tissuOptions.append(objetTissu.getHtml)
+    if (tissu.couleur == selectedTissu) {
+        selectedTissu = objetTissu;
+    }
 })
+
+
+optionsPoche.forEach(poche => {
+    const objetPoche = new OptionPoche(poche.couleur, poche.code, poche.image, poche.price);
+    pocheOptions.append(objetPoche.getHtml)
+    if (poche.couleur == selectedPoche) {
+        selectedPoche = objetPoche;
+    }
+})
+
+couleurText.forEach(texte => {
+    const objetTexte = new OptionTexte(texte.couleur, texte.code);
+    texteColorOptions.append(objetTexte.getHtml)
+
+    document.querySelectorAll('[name="UseText"]').forEach(element => {
+        element.addEventListener("change", event => {
+            if (event.target.value === "true") {
+                textOption = true;
+                document.querySelector("#textColorOptions").style.visibility = document.querySelector("#customText").style.visibility = document.querySelector(".textePerso").style.visibility = "visible";
+
+            } else {
+                textOption = false;
+                document.querySelector("#textColorOptions").style.visibility = document.querySelector("#customText").style.visibility = document.querySelector(".textePerso").style.visibility = "hidden";
+            }
+            repricing();
+
+        })
+    })
+    document.querySelector("#customText").addEventListener("input", (event) => {
+        customText = event.target.value;
+        nbLettre = customText.length;
+        document.querySelector(".textePerso").textContent = customText;
+
+        repricing();
+    })
+    repricing();
+})
+function repricing() {
+    let price = selectedTissu.price + selectedPoche.price;
+    if (textOption) {
+        price += nbLettre * prixLettre;
+    }
+    console.log(price.toFixed(2));
+    priceBlock.textContent = price.toFixed(2) + " €";
+}
